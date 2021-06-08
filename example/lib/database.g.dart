@@ -74,38 +74,25 @@ class _$FlutterDatabase extends FlutterDatabase {
         await callback?.onOpen?.call(database);
       },
       onUpgrade: (database, startVersion, endVersion) async {
-        await _migrate(database, migrations, startVersion, endVersion);
+        await _migrate(
+            database, migrations, startVersion, endVersion, callback);
         await callback?.onUpgrade?.call(database, startVersion, endVersion);
       },
       onCreate: (database, version) async {
-        await _create();
+        await _create(database);
         await callback?.onCreate?.call(database, version);
       },
     );
     return sqfliteDatabaseFactory.openDatabase(path, options: databaseOptions);
   }
 
-  Future<void> _create() async {
+  Future<void> _create(sqflite.Database database) async {
     await database.execute(
         'CREATE TABLE IF NOT EXISTS `Task` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `message` TEXT NOT NULL)');
   }
 
-  Future<void> _dropAll() async {
-    await _drop('table');
-    await _drop('view');
-  }
-
-  Future<void> _drop(String type) async {
-    final names = await database
-        .rawQuery('SELECT name FROM sqlite_master WHERE type = ?', [type]);
-
-    for (final name in names) {
-      await database.rawQuery('DROP ? ?', [type, name]);
-    }
-  }
-
   Future<void> _migrate(sqflite.Database database, List<Migration> migrations,
-      int startVersion, int endVersion) async {
+      int startVersion, int endVersion, Callback? callback) async {
     try {
       await MigrationAdapter.runMigrations(
         database,
