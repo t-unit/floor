@@ -172,9 +172,11 @@ packages:
   floor_annotation:
     dependency: "direct main"
     description:
-      path: "../floor_annotation"
-      relative: true
-    source: path
+      path: floor_annotation
+      ref: destructive-migration-test
+      resolved-ref: "3a79e4346715606f41122d500c703a77f8fc1c43"
+      url: "https://github.com/t-unit/floor.git"
+    source: git
     version: "1.0.0"
   frontend_server_client:
     dependency: transitive
